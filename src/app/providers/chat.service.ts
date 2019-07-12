@@ -16,15 +16,23 @@ export class ChatService {
   constructor( private angularFireStore: AngularFirestore, public angularFireAuth: AngularFireAuth ) {
     this.angularFireAuth.authState.subscribe( user => {
       console.log('Estado del usuario: ', user);
+      if ( !user ) {
+        return;
+      }
+      this.usuario.nombre = user.displayName;
+      this.usuario.uid = user.uid;
     });
   }
 
   login( proveedor: string ) {
     if (proveedor === 'Google') {
       this.angularFireAuth.auth.signInWithPopup(new auth.GoogleAuthProvider());
+    } else if ( proveedor === 'Twitter' ) {
+      this.angularFireAuth.auth.signInWithPopup(new auth.TwitterAuthProvider());
     }
   }
   logout() {
+    this.usuario = {};
     this.angularFireAuth.auth.signOut();
   }
 
